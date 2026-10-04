@@ -1,6 +1,6 @@
 Original functions executed before edits:
 check_guess(60, 50) => ('Too High', '📈 Go HIGHER!')
-check_guess(50, '50') => ('Too Low', '📉 Go LOWER!')
+Correction after actual execution: check_guess(50, '50') => ('Win', '🎉 Correct!'). The real type bug is check_guess(9, '50') => ('Too High', '📈 Go HIGHER!') because the fallback compares strings.
 parse_guess('50.9') => (True, 50, None)
 update_score(0, 'Too High', 2) => 5
 Static inspection: attempts starts at 1; invalid guesses increment attempts; New Game resets only attempts and secret.
