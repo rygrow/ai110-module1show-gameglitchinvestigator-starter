@@ -29,6 +29,7 @@ def parse_guess(raw: str):
     return True, value, None
 
 
+# FIXME: Reversed hints and mixed secret types cause incorrect outcomes.
 def check_guess(guess, secret):
     if guess == secret:
         return "Win", "🎉 Correct!"
@@ -131,6 +132,7 @@ with col2:
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
+# FIXME: Reset every round field and respect the selected range.
 if new_game:
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(1, 100)
