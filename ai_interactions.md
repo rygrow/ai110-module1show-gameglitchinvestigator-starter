@@ -1,76 +1,28 @@
-# AI Interactions Log
+# AI Interactions — Challenge 1: Advanced Edge-Case Testing
 
-> **Stretch features only.** Only fill in the sections that apply to stretch features you attempted. If you did not attempt a stretch feature, leave its section blank or delete it. This file is not required for the core project.
+## Actual user requests
 
----
+- “幫我完成這個作業” — Help me complete this assignment.
+- “我有一個小時 可以做” — I have one hour available.
+- “它有說一定要用類別集中管理狀態 嗎” — Does it require a class to manage state?
+- “採用函式方案，記錄拒絕類別的理由” — Use functions and record the reason for rejecting a class.
 
-## Agent Workflow (SF8)
+## Test-generation instructions
 
-> Document your experience using an AI agent (e.g., Cursor Agent, Claude, Copilot) to make multi-step changes autonomously.
+No separate student prompt was entered for edge-case generation. Codex inferred testing work from the supplied assignment and generated the suite under the student's request to complete it. The following describes the test-generation scope, rather than inventing a prompt the student sent:
 
-**What task did you give the agent?**
+“Verify numeric hints and scoring; reject decimal, blank, and nonnumeric text; reject negative and extremely large guesses at the UI range boundary without consuming attempts; test win, loss, restart, and difficulty changes through Streamlit AppTest.”
 
-<!-- Describe the goal you asked the agent to accomplish -->
+- Negative numbers: valid integer syntax but outside every supported range.
+- Decimal text: catches the original silent truncation bug.
+- Extremely large integers: parses safely but must be rejected by the game's range validation.
 
-**What did the agent do?**
+## Workflow and judgment
 
-<!-- List the steps the agent took (files edited, commands run, etc.) -->
+Codex edited `app.py`, `logic_utils.py`, the two test files, requirements, and documentation. Core rules became pure functions, while UI callbacks manage session state. The student explicitly declined the more complex Game-class suggestion after confirming it was not required. No student manual code changes or browser testing are claimed.
 
-**What did you have to verify or fix manually?**
+The three original tests expect an outcome string, while the original function returned a tuple and the utility stubs raised `NotImplementedError`. The implementation preserves the tests' string contract and puts hint text in the UI. The agent corrected its initial inaccurate mixed-type reproduction note after execution showed that the equal case still wins.
 
-<!-- Describe anything the agent got wrong or that required human review -->
+## Verification
 
----
-
-## Test Generation (SF7)
-
-> Document how you used AI to help generate or improve tests.
-
-| Edge Case | Prompt Used | AI-Suggested Test | Did It Pass? | Your Reasoning |
-|-----------|-------------|-------------------|--------------|----------------|
-| | | | | |
-| | | | | |
-| | | | | |
-
----
-
-## Linting & Style (SF9)
-
-> Document your use of AI for linting or code style improvements.
-
-**Prompt used:**
-
-```
-<!-- Paste the prompt you gave the AI -->
-```
-
-**Linting output before:**
-
-```
-<!-- Paste relevant linter warnings/errors -->
-```
-
-**Changes applied:**
-
-<!-- Describe what you changed based on the AI's suggestions -->
-
----
-
-## Model Comparison (SF11)
-
-> Compare two AI models on the same task.
-
-**Task given to both models:**
-
-<!-- Describe what you asked each model to do -->
-
-| | Model A | Model B |
-|-|---------|---------|
-| **Model name** | | |
-| **Response summary** | | |
-| **More Pythonic?** | | |
-| **Clearer explanation?** | | |
-
-**Which did you prefer and why?**
-
-<!-- Your conclusion -->
+The first full run reported 30 passes and one cold-start timeout. Increasing AppTest's startup allowance to 15 seconds produced the final output saved in `test_results.txt` and copied into the README. AppTest runs the real Streamlit script and callbacks; it is not a claim of manual browser testing.

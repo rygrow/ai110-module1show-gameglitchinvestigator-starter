@@ -1,54 +1,68 @@
-# 🎮 Game Glitch Investigator: The Impossible Guesser
+# Game Glitch Investigator: Number Guesser
 
-## 🚨 The Situation
+A repaired Streamlit guessing game for the CodePath AI110 debugging assignment. Choose a difficulty and guess an integer before the attempt limit. Hints guide the next guess, and New Game starts a clean round.
 
-You asked an AI to build a simple "Number Guessing Game" using Streamlit.
-It wrote the code, ran away, and now the game is unplayable. 
+## Setup
 
-- You can't win.
-- The hints lie to you.
-- The secret number seems to have commitment issues.
+Use Python 3.10 or newer (verified here with Python 3.13).
 
-## 🛠️ Setup
-
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run the broken app: `python -m streamlit run app.py`
-
-## 🕵️‍♂️ Your Mission
-
-1. **Play the game.** Open the "Developer Debug Info" tab in the app to see the secret number. Try to win.
-2. **Find the State Bug.** Why does the secret number change every time you click "Submit"? Ask ChatGPT: *"How do I keep a variable from resetting in Streamlit when I click a button?"*
-3. **Fix the Logic.** The hints ("Higher/Lower") are wrong. Fix them.
-4. **Refactor & Test.** - Move the logic into `logic_utils.py`.
-   - Run `pytest` in your terminal.
-   - Keep fixing until all tests pass!
-
-## 📝 Document Your Experience
-
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
-
-## 📸 Demo Walkthrough
-
-Describe your fixed game in numbered steps so a reader can follow along without watching a video:
-
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
-
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
-
-## 🧪 Test Results
-
-```
-# Paste your pytest output here, e.g.:
-# pytest tests/
-# ========================= X passed in 0.XXs =========================
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
-## 🚀 Stretch Features
+On the computer used for this project, the working environment is `.venv313`:
 
-- [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
+```bash
+source .venv313/bin/activate
+python -m streamlit run app.py
+```
+
+## Rules
+
+- Easy: 1–20, six attempts. Normal: 1–100, eight attempts. Hard: 1–200, five attempts.
+- A valid wrong guess costs five points.
+- A correct guess earns `max(10, 100 - 10 * attempt_number)` points.
+- Invalid or out-of-range input consumes no attempts and changes no score.
+- A correct final allowed guess wins; otherwise reaching the limit ends the round.
+- Changing difficulty or pressing New Game resets score, attempts, history, feedback, and status.
+
+Hard's 1–200 range and the consistent scoring rule are explicit design decisions; the assignment does not specify exact replacement values.
+
+## Document Your Experience
+
+The investigation found reversed hint text, string-based comparisons, truncated decimal input, inconsistent scoring, incorrect attempt counting, and incomplete restart state. `bug_reproduction.txt` records original behavior before repairs, including a correction to an initial assumption. Core rules now live in `logic_utils.py`, with input handling and session updates in `app.py`. The original outcome-string test contract is preserved, and new regression tests cover both rules and the Streamlit interface.
+
+Codex implemented and tested the changes. The student chose the simpler function design over a proposed class refactor; `reflection.md` documents that real decision and clearly identifies this as an AI-assisted draft.
+
+## Demo Walkthrough
+
+This deterministic example is verified by `test_hints_score_and_stable_secret`; an ordinary game chooses a random secret.
+
+1. Start Normal mode with secret 50 in the automated test: score 0 and eight attempts remain.
+2. Enter 40: the game says “Go HIGHER!”, score becomes -5, and seven attempts remain.
+3. Enter 70: the game says “Go LOWER!”, score becomes -10, and six attempts remain.
+4. Enter 50: the game wins on attempt three, adds 70 points, and shows a final score of 60. Submission is disabled.
+5. Press New Game: the game is playable again with score 0, eight attempts, empty history, and a new secret in range.
+6. Enter `50.9`, `-1`, or a very large number: an error appears and no attempt is used.
+
+## Test Results
+
+Run `python -m pytest -q`. The three starter tests remain, with additional cases for inputs, ranges, scoring, hints, reruns, attempt limits, and restarts.
+
+```text
+...............................                                          [100%]
+31 passed in 1.22s
+```
+
+The first run had a test startup timeout; the final run above uses a 15-second AppTest allowance. Automated AppTest verification exercises the Streamlit script; manual browser play is not claimed.
+
+## Stretch Features
+
+Challenge 1 (Advanced Edge-Case Testing) is complete. Negative numbers, decimals, and extremely large values are tested in `tests/test_app.py`, with parsing cases in `tests/test_game_logic.py`. See `ai_interactions.md` for the actual conversation, test-generation scope, and why each edge case was chosen.
+
+## Submission
+
+The repository includes README, reflection, AI interaction notes, automated tests, and saved test results. Progress is recorded in separate investigation, repair, and documentation commits. Review the AI-assisted reflection so it accurately represents your own understanding before submitting the public GitHub repository URL.
